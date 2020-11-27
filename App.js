@@ -29,32 +29,10 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      book: '리액트 배우기',
-    };
-  }
-  updateBook() {
-    this.setState({
-      book: '리액트 입문자',
-    });
-  }
   render() {
     return (
-      <BookDisplay
-        updateBook={() => this.updateBook()}
-        book={this.state.book}
-      />
-    );
-  }
-}
-
-class BookDisplay extends Component {
-  render() {
-    return (
-      <View>
-        <Text onPress={this.props.updateBook}>{this.props.book}</Text>
+      <View style={{marginLeft: 20, marginTop: 20}}>
+        <Text style={{fontSize: 18, color: 'lightgreen'}}>안녕하십니까?</Text>
       </View>
     );
   }
