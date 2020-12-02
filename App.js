@@ -6,34 +6,86 @@
  * @flow strict-local
  */
 
-import React, {Component, useState} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  Button,
-  Platform,
-  StatusBar,
-  TextInput,
-  Image,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import React, {Component} from 'react';
+
+import AsyncStorage from '@react-native-community/async-storage';
+import Tabs from './practice/citiesApp';
+
+const key = 'state';
+
+const initialState = [
+  {
+    city: 'Paris',
+    country: 'France',
+    id: 0,
+    locations: [],
+  },
+  {
+    city: 'Busan',
+    country: 'Korea',
+    id: 1,
+    locations: [],
+  },
+];
 
 class App extends Component {
+  state = {
+    cities: [],
+  };
+
+  async componentDidMount() {
+    console.log('component did mount');
+    try {
+      let cities = await AsyncStorage.getItem(key);
+      if (cities) {
+        cities = JSON.parse(cities);
+        this.setState({cities});
+      }
+    } catch (e) {
+      console.log('error from AsyncStorage: ', e);
+    }
+  }
+
+  addCity = (city) => {
+    const cities = this.state.cities;
+    cities.push(city);
+    this.setState({cities});
+    AsyncStorage.setItem(key, JSON.stringify(cities))
+      .then(() => console.log('storage updated!'))
+      .catch((e) => console.log('e: ', e));
+  };
+
+  addLocation = (location, city) => {
+    const index = this.state.cities.findIndex((item) => {
+      return item.id === city.id;
+    });
+    const chosenCity = this.state.cities[index];
+    chosenCity.locations.push(location);
+    const cities = [
+      ...this.state.cities.slice(0, index),
+      chosenCity,
+      ...this.state.cities.slice(index + 1),
+    ];
+    this.setState(
+      {
+        cities,
+      },
+      () => {
+        AsyncStorage.setItem(key, JSON.stringify(cities))
+          .then(() => console.log('storage updated!'))
+          .catch((e) => console.log('e: ', e));
+      },
+    );
+  };
   render() {
     return (
-      <View style={{marginLeft: 20, marginTop: 20}}>
-        <Text style={{fontSize: 18, color: 'lightgreen'}}>안녕하십니까?</Text>
-      </View>
+      <Tabs
+        screenProps={{
+          cities: this.state.cities,
+          addCity: this.addCity,
+          addLocation: this.addLocation,
+        }}
+      />
     );
   }
 }
