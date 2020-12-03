@@ -9,7 +9,7 @@
 import React, {Component} from 'react';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import Tabs from './practice/citiesApp';
+import Tabs from './practice/navigation';
 
 const key = 'state';
 
@@ -77,6 +77,7 @@ class App extends Component {
       },
     );
   };
+
   render() {
     return (
       <Tabs
